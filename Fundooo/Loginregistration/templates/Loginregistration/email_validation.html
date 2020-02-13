@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Email Validation</title>
+<body>
+
+    <div class="right_text" style="margin-top:30px ">
+        <div class="column" align="center">
+            <div class="w3-col.m8">
+                  <h2 id="logo">Email_validation</h2><br>
+                  <h4 id ="menu_text">Please confirm your email address </h4><br>
+                  <!--div class="fakeimg">Fake Image<!/div-->
+                  <p>You have created an account with the username: {{ user }}., please verify this is the correct email address. </p>
+                <br> <ul class="nav nav-pills nav-justified ">
+                      <a class="button" href="http://{{ domain }}{{ short_token }}" >Confirm your Email</a>
+                </ul>
+                <small>This link will expire in 3 days. </small><br><br>
+                 </div>
+
+            <div class="col-2 offset-5" >
+                <br><br>
+                <small style="font-size: x-small">
+                <p class="column middle_footer">
+                  Thank you.
+                  </p>  </small><br>
+                </div>
+        </div>
+    </div>
+
+</body>
+</html>
+
