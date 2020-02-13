@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import logging, json
+from django.conf import settings
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -14,7 +15,7 @@ from django.core.validators import validate_email
 from django.urls import reverse
 from .token import token_activation
 from .sendmail import send_mail_to_recipients
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django_short_url.views import get_surl
 from django_short_url.models import ShortURL
 from django.template.loader import render_to_string
@@ -23,10 +24,14 @@ import pdb
 from django.core.mail import send_mail
 import os
 import smtplib
+import jwt
+#from jwt import ExpiredSignatureError
+from django.contrib import messages
+from Fundooo.settings import EMAIL_HOST_USER, SECRET_KEY
 
-print(os.environ.get('EMAIL_HOST_USER'))
-print(os.environ.get('EMAIL_HOST_PASSWORD'))
-# Create your views here.
+# print(os.environ.get('EMAIL_HOST_USER'))
+# print(os.environ.get('EMAIL_HOST_PASSWORD'))
+
 
 class RegistrationAPIview(GenericAPIView):
 
@@ -74,62 +79,87 @@ class RegistrationAPIview(GenericAPIView):
         else:
             try:
                 user_created = User.objects.create_user(username=username, email=email, password=password1,
-                                                        is_active=True)
+                                                        is_active=False)
                 user_created.save()
-                # print("1111111", user_created)
-                # user is unique then we will send token to his/her email for validation
                 if user_created is not None:
-                    token = str(token_activation(username, password1))
-                    # print("22222222222",token)
+                    token = str(token_activation(username))
                     short_url = get_surl(token)
-                    # print("4444444",short_url)
                     short_token = short_url.split("/")[2]
-                    # print(short_token)
-
-                    # sending email for activation
-                    # pdb.set_trace()
                     mail_subject = "Activate your account by clicking below link..!"
                     mail_message = render_to_string('Loginregistration/email_validation.html', {
                         'user': user_created.username,
                         'domain': get_current_site(request).domain,
-                        'short_token': short_token
+                        'short_token': short_token,
+                        # 'token':token
                     })
                     # print(mail_message)
                     recipient_email = user_created.email
-                  
-                    # email = EmailMessage(mail_subject, mail_message, to=[recipient_email])
-                    send_mail_to_recipients(mail_subject, mail_message,recipient_email)
-                    email.send()
-                    return Response("Please check your mail.")
+
+                    subject, from_email, to = mail_subject, EMAIL_HOST_USER, recipient_email
+
+                    #email = EmailMessage(mail_subject, mail_message, to=[recipient_email])
+                    text_content = 'This is an important message.'
+                    html_content = mail_message
+                    msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+                    msg.attach_alternative(html_content, "text/html")
+                    msg.send()
+                    sms = {
+                        'success': True,
+                        'message': 'please check the mail and click on the link  for validation',
+                        'data': [token],
+                    }
+                    logging.info("email was sent to %s email address ", username)
+                    return HttpResponse('<h1>please check the mail and click on the link  for validation</h1>', status=201)
             except Exception as e:
+                print(e)
                 sms["success"] = False
-                sms["message"] = "username already taken, Please choose other unique username."
-                logging.error("error: %s while Registration ", str(e))
+                sms["message"] = "username already taken"
+                logging.error("error: %s while registration ", str(e))
                 return HttpResponse(json.dumps(sms), status=400)
 
 
-        print(username,email,password1,password2,sms)
-        return HttpResponse("till .. done..")
+class LoginAPIview(GenericAPIView):
+    serializer_class = LoginSerializer
 
-    
-#  mail_subject = "Activate your account by clicking below link"
-#                     mail_message = render_to_string('user/email_validation.html', {
-#                         'user': user_created.username,
-#                         'domain': get_current_site(request).domain,
-#                         'surl': z[2]
-#                     })
-#                     recipient_email = user_created.email
-#                     email = EmailMessage(mail_subject, mail_message, to=[recipient_email])
-#                     email.send()
-#                     smd = {
-#                         'success': True,
-#                         'message': 'please check the mail and click on the link  for validation',
-#                         'data': [token],
-#                     }
-#                     logger.info("email was sent to %s email address ", username)
-#                     return HttpResponse(json.dumps(smd), status=201)
-#             except Exception as e:
-#                 smd["success"] = False
-#                 smd["message"] = "username already taken"
-#                 logger.error("error: %s while loging in ", str(e))
-#                 return HttpResponse(json.dumps(smd), status=400)
+    def get(self, request):
+        return render(request, 'Loginregistration/login.html')
+
+    def post(self, request):
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username=username, password=password)
+        if user:
+            if user.is_active:
+                login(request,user)
+                return HttpResponse("<h1>Your account is successfully Logged in...!</h1>")
+            else:
+                return HttpResponse("<h1>Your account was inactive.</h1>")
+        else:
+            logging.error("Failed, Not the Registered username or password")
+            logging.error("They used username: {} and password: {}".format(username,password))
+            return HttpResponse("<h1>Invalid login details given</h1>")               
+
+def activate(request, surl): 
+    try:
+        tokenobject = ShortURL.objects.get(surl=surl)
+        token = tokenobject.lurl
+        #print("11111111",token)
+        decode = jwt.decode(token, settings.SECRET_KEY)
+        #print("3333333",decode)
+        username = decode['username']
+        #print("444444",username)
+        user = User.objects.get(username=username)
+
+        # if user is not none then user account willed be activated
+        if user is not None:
+            user.is_active = True
+            user.save()
+            logging.info(request, "your account is active now")
+            return redirect('/api/login')
+        else:
+            logging.info(request, 'not able to sent the email')
+            return redirect('/api/registration')
+    except KeyError:
+        logging.info(request, 'was not able to sent the email')
+        return redirect('/api/registration')
+
