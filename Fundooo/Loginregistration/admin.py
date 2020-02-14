@@ -1,3 +1,12 @@
+"""
+ ******************************************************************************
+ *  Purpose: Login Registration functionality using Django-REST framework.
+ *  File  : admin.py
+ *  Author :Santoshi kalaskar
+ ******************************************************************************
+"""
+
+
 from django.contrib import admin
 from .models import Registration
 from .forms import RegistrationForm

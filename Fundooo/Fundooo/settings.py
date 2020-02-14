@@ -11,9 +11,11 @@ from datetime import timedelta
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # #Logging 
-# formatter = logging.Formatter('%(levelname)s :%(asctime)s :%(pathname)s :%(lineno)s :%(message)s')
-# file_handler = logging.FileHandler(filename=os.path.join(os.getcwd(), '/Loginreg.log')
-# file_handler.setFormatter(formatter)
+log_filename = "logs/output.log"
+os.makedirs(os.path.dirname(log_filename), exist_ok=True)
+formatter = logging.Formatter('%(levelname)s :%(asctime)s :%(pathname)s :%(lineno)s :%(message)s')
+file_handler = logging.FileHandler(filename=log_filename)
+file_handler.setFormatter(formatter)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '-(=-50iklh+r^mtl_lmwe%k&(w!&%-$ak=1*a$-c)rcj!vnq)9'

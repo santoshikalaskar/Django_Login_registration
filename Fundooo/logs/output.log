@@ -1,0 +1,5 @@
+INFO :2020-02-14 10:11:54,229 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :207 :email was sent to fundoo email address 
+INFO :2020-02-14 10:14:06,900 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :207 :email was sent to fundoo email address 
+ERROR :2020-02-14 10:19:02,036 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :213 :something went wrong
+ERROR :2020-02-14 10:21:24,233 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :143 :Failed, Not the Registered username or password
+ERROR :2020-02-14 10:21:24,233 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :144 :They used username: santo and password: test

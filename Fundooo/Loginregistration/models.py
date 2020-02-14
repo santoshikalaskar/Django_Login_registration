@@ -1,3 +1,12 @@
+"""
+ ******************************************************************************
+ *  Purpose: Login Registration functionality using Django-REST framework.
+ *  File  : models.py
+ *  Author : Santoshi kalaskar
+ ******************************************************************************
+"""
+
+
 from django.db import models
 from django import forms
 

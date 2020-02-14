@@ -1,3 +1,12 @@
+"""
+ ******************************************************************************
+ *  Purpose: Login Registration functionality using Django-REST framework.
+ *  File  :view.py
+ *  Author :Santoshi kalaskar
+ ******************************************************************************
+"""
+
+
 from django.shortcuts import render, redirect
 import logging, json
 from django.conf import settings
@@ -8,7 +17,6 @@ from rest_framework import generics
 from rest_framework.generics import GenericAPIView
 from .models import Registration
 from .serializers import RegistrationSerializer, LoginSerializer,EmailSerializer
-from django.contrib.auth.forms import UserChangeForm 
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
 from django.core.validators import validate_email
@@ -27,11 +35,11 @@ import smtplib
 import jwt
 #from jwt import ExpiredSignatureError
 from django.contrib import messages
-from Fundooo.settings import EMAIL_HOST_USER, SECRET_KEY
+from Fundooo.settings import EMAIL_HOST_USER, SECRET_KEY, file_handler
 
-# print(os.environ.get('EMAIL_HOST_USER'))
-# print(os.environ.get('EMAIL_HOST_PASSWORD'))
-
+logger = logging.getLogger(__name__)
+#logger.setLevel(logging.INFO)
+logger.addHandler(file_handler)
 
 class RegistrationAPIview(GenericAPIView):
 
@@ -54,25 +62,25 @@ class RegistrationAPIview(GenericAPIView):
             validate_email(email)
         except Exception as e:
             sms['message'] = "please enter vaild email address"
-            logging.error("error: %s while as email entered was not a vaild email address", str(e))
+            logger.error("error: %s while as email entered was not a vaild email address", str(e))
             return HttpResponse(json.dumps(sms), status=400)
 
          # user input is checked
         if username == "" or email == "" or password1 == "" or password2 == "":
             sms['message'] = "one of the details missing, please enter carefully."
-            logging.error("one of the details missing while registration process.")
+            logger.error("one of the details missing while registration process.")
             return HttpResponse(json.dumps(sms), status=400)
 
         # if email exists it will show error message
         elif User.objects.filter(email=email).exists():
             sms['message'] = "email address is already registered, please enter other Email_Id!"
-            logging.error("email address is already registered registration process")
+            logger.error("email address is already registered registration process")
             return HttpResponse(json.dumps(sms), status=400)
         
         # if both password not matches then show error message
         elif not password1 == password2:
             sms['message'] = "Both password is not matched, please password enter carefully !"
-            logging.error("email address is already registered registration process")
+            logger.error("email address is already registered registration process")
             return HttpResponse(json.dumps(sms), status=400)
 
         # create New user    
@@ -94,9 +102,7 @@ class RegistrationAPIview(GenericAPIView):
                     })
                     # print(mail_message)
                     recipient_email = user_created.email
-
                     subject, from_email, to = mail_subject, EMAIL_HOST_USER, recipient_email
-
                     #email = EmailMessage(mail_subject, mail_message, to=[recipient_email])
                     text_content = 'This is an important message.'
                     html_content = mail_message
@@ -108,13 +114,12 @@ class RegistrationAPIview(GenericAPIView):
                         'message': 'please check the mail and click on the link  for validation',
                         'data': [token],
                     }
-                    logging.info("email was sent to %s email address ", username)
+                    logger.info("email was sent to %s email address ", username)
                     return HttpResponse('<h1>please check the mail and click on the link  for validation</h1>', status=201)
             except Exception as e:
-                print(e)
                 sms["success"] = False
                 sms["message"] = "username already taken"
-                logging.error("error: %s while registration ", str(e))
+                logger.error("error: %s while registration ", str(e))
                 return HttpResponse(json.dumps(sms), status=400)
 
 
@@ -135,8 +140,8 @@ class LoginAPIview(GenericAPIView):
             else:
                 return HttpResponse("<h1>Your account was inactive.</h1>")
         else:
-            logging.error("Failed, Not the Registered username or password")
-            logging.error("They used username: {} and password: {}".format(username,password))
+            logger.error("Failed, Not the Registered username or password")
+            logger.error("They used username: {} and password: {}".format(username,password))
             return HttpResponse("<h1>Invalid login details given</h1>")  
 
 class ForgotPasswordView(GenericAPIView):
@@ -156,11 +161,14 @@ class ForgotPasswordView(GenericAPIView):
 
         if email == "":
             response['message'] = 'email field is empty please provide vaild input'
+            logger.error('email field is empty please provide vaild input')
             return HttpResponse(json.dumps(response), status=400)
         else:
             try:
                 validate_email(email)
             except Exception:
+                response['message'] = 'email field value is not vaild input, please provide valid email id.'
+                logger.error('email field value is not vaild input')
                 return HttpResponse(json.dumps(response) ,status=400)
             try:
                 query_user = User.objects.filter(email=email)
@@ -196,35 +204,33 @@ class ForgotPasswordView(GenericAPIView):
                         'message': 'please check the mail and click on the link  for Reset password',
                         'data': [token],
                     }
-                    logging.info("email was sent to %s email address ", username)
+                    logger.info("email was sent to %s email address ", username)
                     return HttpResponse('<h1>please check the mail and click on the link  for Reseting your password</h1>', status=201)
 
             except Exception as e:
                 print(e)
-                response['message'] = "something went wrong"
+                response['message'] = "something went wrong, please try again."
+                logger.error("something went wrong")
                 return HttpResponse(json.dumps(response), status=400)             
 
 def activate(request, surl): 
     try:
         tokenobject = ShortURL.objects.get(surl=surl)
         token = tokenobject.lurl
-        #print("11111111",token)
         decode = jwt.decode(token, settings.SECRET_KEY)
-        #print("3333333",decode)
         username = decode['username']
-        #print("444444",username)
         user = User.objects.get(username=username)
 
         # if user is not none then user account willed be activated
         if user is not None:
             user.is_active = True
             user.save()
-            logging.info(request, "your account is active now")
+            logger.info(request, "your account is active now")
             return redirect('/api/login')
         else:
-            logging.info(request, 'not able to sent the email')
+            logger.info(request, 'not able to sent the email')
             return redirect('/api/registration')
     except KeyError:
-        logging.info(request, 'was not able to sent the email')
+        logger.info(request, 'was not able to sent the email')
         return redirect('/api/registration')
 

@@ -1,3 +1,12 @@
+"""
+ ******************************************************************************
+ *  Purpose: Login Registration functionality using Django-REST framework.
+ *  File  : serializers.py
+ *  Author :Santoshi kalaskar
+ ******************************************************************************
+"""
+
+
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Registration

@@ -1,3 +1,12 @@
+"""
+ ******************************************************************************
+ *  Purpose: Login Registration functionality using Django-REST framework.
+ *  File  : urls.py
+ *  Author :Santoshi kalaskar
+ ******************************************************************************
+"""
+
+
 
 from django.urls import path, include
 from .views import RegistrationAPIview,ForgotPasswordView

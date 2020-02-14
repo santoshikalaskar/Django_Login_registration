@@ -1,3 +1,11 @@
+"""
+ ******************************************************************************
+ *  Purpose: Login Registration functionality using Django-REST framework.
+ *  File  : token.py
+ *  Author :Santoshi kalaskar
+ ******************************************************************************
+"""
+
 
 import datetime
 import pdb
