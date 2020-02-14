@@ -20,6 +20,12 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'password']
 
 
+class EmailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['email']
+
+
     
 
 

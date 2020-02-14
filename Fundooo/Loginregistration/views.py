@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework.generics import GenericAPIView
 from .models import Registration
-from .serializers import RegistrationSerializer, LoginSerializer
+from .serializers import RegistrationSerializer, LoginSerializer,EmailSerializer
 from django.contrib.auth.forms import UserChangeForm 
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
@@ -82,7 +82,7 @@ class RegistrationAPIview(GenericAPIView):
                                                         is_active=False)
                 user_created.save()
                 if user_created is not None:
-                    token = str(token_activation(username))
+                    token = str(token_activation(username,password1))
                     short_url = get_surl(token)
                     short_token = short_url.split("/")[2]
                     mail_subject = "Activate your account by clicking below link..!"
@@ -137,7 +137,72 @@ class LoginAPIview(GenericAPIView):
         else:
             logging.error("Failed, Not the Registered username or password")
             logging.error("They used username: {} and password: {}".format(username,password))
-            return HttpResponse("<h1>Invalid login details given</h1>")               
+            return HttpResponse("<h1>Invalid login details given</h1>")  
+
+class ForgotPasswordView(GenericAPIView):
+
+    serializer_class = EmailSerializer
+
+    def get(self, request):
+        return render(request, 'Loginregistration/forgotpassword.html')
+    # pdb.set_trace()
+    def post(self, request):
+        email = request.POST.get('email')
+        response = {
+            'success': False,
+            'message': "not a vaild email ",
+            'data': []
+        }
+
+        if email == "":
+            response['message'] = 'email field is empty please provide vaild input'
+            return HttpResponse(json.dumps(response), status=400)
+        else:
+            try:
+                validate_email(email)
+            except Exception:
+                return HttpResponse(json.dumps(response) ,status=400)
+            try:
+                query_user = User.objects.filter(email=email)
+                useremail = query_user.values()[0]["email"]
+                username = query_user.values()[0]["username"]
+                id = query_user.values()[0]["id"]
+
+                if useremail is not None:
+                    token = token_activation(username, id)
+                    url = str(token)
+                    surl = get_surl(url)
+                    short_token = surl.split("/")[2]
+
+                    # email is generated  where it is sent the email address entered in the form
+                    mail_subject = "Reset your account Password by clicking below link"
+                    mail_message = render_to_string('Loginregistration/email_validation.html', {
+                        'user': username,
+                        'domain': get_current_site(request).domain,
+                        'short_token': short_token
+                    })
+
+                    recipient_email = email
+
+                    subject, from_email, to = mail_subject, EMAIL_HOST_USER, recipient_email
+                    #email = EmailMessage(mail_subject, mail_message, to=[recipient_email])
+                    text_content = 'This is an important message.'
+                    html_content = mail_message
+                    msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+                    msg.attach_alternative(html_content, "text/html")
+                    msg.send()
+                    sms = {
+                        'success': True,
+                        'message': 'please check the mail and click on the link  for Reset password',
+                        'data': [token],
+                    }
+                    logging.info("email was sent to %s email address ", username)
+                    return HttpResponse('<h1>please check the mail and click on the link  for Reseting your password</h1>', status=201)
+
+            except Exception as e:
+                print(e)
+                response['message'] = "something went wrong"
+                return HttpResponse(json.dumps(response), status=400)             
 
 def activate(request, surl): 
     try:
