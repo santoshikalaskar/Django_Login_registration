@@ -144,12 +144,10 @@ class ForgotPasswordView(GenericAPIView):
     serializer_class = EmailSerializer
 
     def get(self, request):
-        print('111111')
         return render(request, 'Loginregistration/forgotpassword.html')
     # pdb.set_trace()
     def post(self, request):
         email = request.POST.get('email')
-        print('2222')
         response = {
             'success': False,
             'message': "not a vaild email ",
