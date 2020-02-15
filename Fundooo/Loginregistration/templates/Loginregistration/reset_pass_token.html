@@ -1,0 +1,32 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reset Password Authentication Link</title>
+<body>
+
+    <div class="right_text" style="margin-top:30px ">
+        <div class="column" align="center">
+            <div class="w3-col.m8">
+                  <h2 id="logo">Reset Password</h2><br>
+                  <h4 id ="menu_text">Please click below link to Reset your password </h4><br>
+                  <p>You are Requested to reset password with the username: <b>{{ user }}</b> , please click below link to verify this link to check  Authenticated user. </p>
+                <br> <ul class="nav nav-pills nav-justified ">
+                    <a class="button" href="http://{{ domain }}{%  url 'reset_password' surl=short_token %}" >Reset Your Password.</a> 
+                    </ul>    
+                <small>This link will expire in 3 days. </small><br><br>
+                 </div>
+            <div class="col-2 offset-5" >
+                <br><br>
+                <small style="font-size: x-small">
+                <p class="column middle_footer">
+                  Thank you.
+                  </p>  </small><br>
+                </div>
+        </div>
+    </div>
+
+</body>
+</html>
