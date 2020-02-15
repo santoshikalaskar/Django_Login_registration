@@ -1,0 +1,7 @@
+*.pyc
+*.vscode
+
+*/Fundooo/Loginregistration/__pycache__/models.cpython-36.pyc
+*/Fundooo/Loginregistration/__pycache__/serializers.cpython-36.pyc
+*/Fundooo/Loginregistration/__pycache__/urls.cpython-36.pyc
+*/Fundooo/Loginregistration/__pycache__/views.cpython-36.pyc

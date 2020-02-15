@@ -22,17 +22,16 @@ class LoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'password']
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password']
-
-
+        
 class EmailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email']
+
+class ResetPassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['password']
 
 
     
