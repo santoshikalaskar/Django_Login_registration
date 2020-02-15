@@ -213,7 +213,7 @@ class ForgotPasswordAPIview(GenericAPIView):
                     recipient_email = email
 
                     subject, from_email, to = mail_subject, EMAIL_HOST_USER, recipient_email
-                    #email = EmailMessage(mail_subject, mail_message, to=[recipient_email])
+                   
                     text_content = 'This is an important message.'
                     html_content = mail_message
                     msg = EmailMultiAlternatives(subject, text_content, from_email, [to])

@@ -1,3 +1,4 @@
-.pyc
-.vscode
+*.pyc
+**/.vscode/
+**/__pycache__/
 
