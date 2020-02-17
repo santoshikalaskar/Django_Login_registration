@@ -100,18 +100,18 @@ WSGI_APPLICATION = 'Fundooo.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
     # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'loginapp',
-    #     'USER': 'santoshi',
-    #     'PASSWORD': 'testing321',
-    #     'HOST': '127.0.0.1',
-    #     'PORT': '5432',
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     # }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'loginapp',
+        'USER': 'santoshi',
+        'PASSWORD': 'testing321',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    }
 }
 
 REST_FRAMEWORK = {
@@ -212,8 +212,10 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 LOGIN_REDIRECT_URL = 'home'
+# LOGOUT_REDIRECT_URL = 'home'
+
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '17490015860-6ncn7fpig453to983k6acvr68893qmp1.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET ='niYf7Uv4o2mAWVjAMv_7fA2b'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET ='DAx-i3AsOCu4RSBnLFk8Ot8p'
 
 SOCIAL_AUTH_GITHUB_KEY = '686f469f289e33c55149'
 SOCIAL_AUTH_GITHUB_SECRET = '7b1e72f40834f5084607181e162f626f7c88568e'

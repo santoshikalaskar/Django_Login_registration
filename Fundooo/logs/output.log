@@ -1,2 +1,34 @@
 ERROR :2020-02-16 08:40:43,216 :/home/santoshi/Documents/Best-fundoo-app/app/Loginregistration/views.py :162 :Failed, Not the Registered username or password
 ERROR :2020-02-16 08:40:43,216 :/home/santoshi/Documents/Best-fundoo-app/app/Loginregistration/views.py :163 :They used username: santoshi and password: testng321
+ERROR :2020-02-17 06:45:14,345 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :170 :Failed, Not the Registered username or password
+ERROR :2020-02-17 06:45:14,346 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :171 :They used username: fundoo and password: test
+ERROR :2020-02-17 06:49:14,643 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :78 :email address is already registered registration process
+ERROR :2020-02-17 09:22:21,253 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :332 :something went wrong while logging out
+ERROR :2020-02-17 09:22:24,469 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :332 :something went wrong while logging out
+ERROR :2020-02-17 09:22:54,368 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :331 :something went wrong while logging out
+ERROR :2020-02-17 09:23:15,455 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :331 :something went wrong while logging out
+ERROR :2020-02-17 09:23:33,343 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :331 :something went wrong while logging out
+ERROR :2020-02-17 09:23:58,057 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :331 :something went wrong while logging out
+ERROR :2020-02-17 09:36:41,952 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :175 :Failed, Not the Registered username or password
+ERROR :2020-02-17 09:36:41,952 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :176 :They used username: fundoo and password: qwdq
+ERROR :2020-02-17 09:37:20,069 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :176 :Failed, Not the Registered username or password
+ERROR :2020-02-17 09:37:20,069 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :177 :They used username: eg and password: eg
+ERROR :2020-02-17 09:37:32,497 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :176 :Failed, Not the Registered username or password
+ERROR :2020-02-17 09:37:32,498 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :177 :They used username: eg and password: eg
+ERROR :2020-02-17 09:41:08,238 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :176 :Failed, Not the Registered username or password
+ERROR :2020-02-17 09:41:08,238 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :177 :They used username: fundoo and password: testing321
+ERROR :2020-02-17 09:49:05,015 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :335 :something went wrong while logging out
+ERROR :2020-02-17 09:49:23,105 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :335 :something went wrong while logging out
+ERROR :2020-02-17 10:25:51,635 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :336 :something went wrong while logging out
+ERROR :2020-02-17 10:26:54,547 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :336 :something went wrong while logging out
+ERROR :2020-02-17 10:27:11,328 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :336 :something went wrong while logging out
+ERROR :2020-02-17 10:27:33,206 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :336 :something went wrong while logging out
+ERROR :2020-02-17 10:29:53,666 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :335 :something went wrong while logging out
+ERROR :2020-02-17 10:32:23,981 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :336 :something went wrong while logging out
+ERROR :2020-02-17 10:35:25,989 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :336 :something went wrong while logging out
+ERROR :2020-02-17 10:36:03,493 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :336 :something went wrong while logging out
+ERROR :2020-02-17 10:37:15,321 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :336 :something went wrong while logging out
+ERROR :2020-02-17 11:21:49,334 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :337 :something went wrong while logging out
+ERROR :2020-02-17 11:22:16,905 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :337 :something went wrong while logging out
+ERROR :2020-02-17 12:04:40,072 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :164 :Failed, Not the Registered username or password
+ERROR :2020-02-17 12:04:40,072 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :165 :They used username: fundoo and password: 123445

@@ -9,6 +9,7 @@
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.http import HttpResponse
+from django.contrib.auth import authenticate, login, logout
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
@@ -38,28 +39,8 @@ logger.addHandler(file_handler)
 
 @login_required
 def home(request):
-    return render(request, 'Loginregistration/home.html')
-
-def activate(request, surl): 
-    try:
-        tokenobject = ShortURL.objects.get(surl=surl)
-        token = tokenobject.lurl
-        decode = jwt.decode(token, settings.SECRET_KEY)
-        username = decode['username']
-        user = User.objects.get(username=username)
-
-        # if user is not none then user account will be activated
-        if user is not None:
-            user.is_active = True
-            user.save()
-            logger.info(request, "your account is active now")
-            return redirect('/api/login')
-        else:
-            logger.info(request, 'not able to sent the email')
-            return redirect('/api/registration')
-    except KeyError:
-        logger.info(request, 'was not able to sent the email')
-        return redirect('/api/registration')
+    count = User.objects.count()
+    return render(request, 'Loginregistration/home.html',{'count':count})
 
 
 class RegistrationAPIview(GenericAPIView):
@@ -143,6 +124,29 @@ class RegistrationAPIview(GenericAPIView):
                 logger.error("error: %s while registration ", str(e))
                 return HttpResponse(json.dumps(sms), status=400)
 
+def activate(request, surl): 
+    try:
+        tokenobject = ShortURL.objects.get(surl=surl)
+        token = tokenobject.lurl
+        decode = jwt.decode(token, settings.SECRET_KEY)
+        username = decode['username']
+        user = User.objects.get(username=username)
+
+        # if user is not none then user account will be activated
+        if user is not None:
+            user.is_active = True
+            user.save()
+            logger.info(request, "your account is active now")
+            return redirect('/api/login')
+        else:
+            logger.info(request, 'not able to sent the email')
+            return redirect('/api/registration')
+    except KeyError:
+        logger.info(request, 'was not able to sent the email')
+        return redirect('/api/registration')
+
+
+
 # for login user
 class LoginAPIview(GenericAPIView):
     serializer_class = LoginSerializer
@@ -156,18 +160,22 @@ class LoginAPIview(GenericAPIView):
         # authenticate entered details while login
         user = authenticate(username=username, password=password)
         # if valied user and check its status is active or not, if yes then allowed to login
-        if user:
-            if user.is_active:
-                login(request,user)
-                logger.info("user logged in successfully..user-> {}!".format(username))
-                return HttpResponse("<h1>Your account is successfully Logged in...!</h1>")
-            else:
-                logger.error("Failed, to login,account was inactive")
-                return HttpResponse("<h1>Your account was inactive.</h1>")
-        else:
+        if not user:
             logger.error("Failed, Not the Registered username or password")
             logger.error("They used username: {} and password: {}".format(username,password))
             return HttpResponse("<h1>Invalid login details given</h1>")  
+
+        print("111111111",user)
+        if user.is_active:
+            login(request,user)
+            print("111111111",user)
+            logger.info("user logged in successfully..user-> {}!".format(username))
+            #return HttpResponse("<h1>Your account is successfully Logged in...!</h1>")
+            return redirect('home')
+        
+        logger.error("Failed, to login,account was inactive")
+        return HttpResponse("<h1>Your account was inactive.</h1>")
+            
 
 # forgotpassword call 
 class ForgotPasswordAPIview(GenericAPIView):
@@ -281,31 +289,45 @@ class ResetPasswordAPIview(GenericAPIView):
             return Response(sms, status=404)
 
         # if new entered password is null throw error. 
-        elif password == "":
+        if password == "":
             sms['message'] = 'New password not entered'
             logger.error('New password not entered')
             return Response(sms, status=400)
 
         # if entered password has charactor less than 7 throw error
-        elif len(password) <= 7:
+        if len(password) <= 7:
             sms['message'] = 'password should be grater than 7 dicharacters.'
             logger.error('New password less than 7 characters')
             return Response(sms, status=400)
         
         # else match this username & set password to that user
-        else:
-            try:
-                user = User.objects.get(username=user_name)
-                user.set_password(password)
-                user.save()
-                sms = {
-                    'success': True,
-                    'message': 'password reset done successfully.'
-                }
-                logger.info('New password set successfully..!')
-                return Response(sms, status=201)
-            except User.DoesNotExist:
-                smd['message'] = 'not a vaild user '
-                logger.error('User does not exits.')
-                return HttpResponse(sms, status=400)
+        
+        try:
+            user = User.objects.get(username=user_name)
+            user.set_password(password)
+            user.save()
+            sms = {
+                'success': True,
+                'message': 'password reset done successfully.'
+            }
+            logger.info('New password set successfully..!')
+            return Response(sms, status=201)
+        except User.DoesNotExist:
+            smd['message'] = 'not a vaild user '
+            logger.error('User does not exits.')
+            return HttpResponse(sms, status=400)
 
+
+def LogoutAPIview(request):
+    sms = {"success": False, "message": "logout request", "data": []}
+    try:
+        user = request.user
+        logout(request)
+        print(user)
+        sms = {"success": True, "message": "logged out succesfully", "data": []}
+        logger.info("%s logged out succesfully ", user)
+        return render(request, 'Loginregistration/home.html')
+    except Exception:
+        logger.error("something went wrong while logging out")
+        return HttpResponse(json.dumps(sms), status=400)
+        

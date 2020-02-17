@@ -1,6 +1,15 @@
 
-
+{% extends 'Loginregistration/base1.html' %}
 {% block content %}
-  <h2>Homepage</h2>
-  <p>Hello {{ user.username }}!</p>
+  
+  <center>
+      <h2>Homepage</h2>
+      <p> Welcome to my site, {% if user.is_authenticated %} <strong> {{ user.username }} </strong> 
+        {% else%} visitors  {% endif %}</p>
+      <p>
+        <strong> Total User Registered:</strong> {{ count }}
+      </p>
+  </center>
+  
+  <!-- <p>Hello {{ user.username }}!</p> -->
 {% endblock %}
