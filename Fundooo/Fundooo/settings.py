@@ -35,14 +35,28 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'django.contrib.sites',
     # thired-party apps
     'rest_framework',
     'django_short_url',
+    'social_django',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 
     #Local-apps
     'Loginregistration',
 
+
+
+]
+
+AUTHENTICATION_BACKENDS=[
+    'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+    # 'django.account.auth_backends.AuthenticationBackend',
 
 ]
 
@@ -54,6 +68,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'Fundooo.urls'
@@ -69,6 +85,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -81,18 +100,18 @@ WSGI_APPLICATION = 'Fundooo.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # }
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'loginapp',
-        'USER': 'santoshi',
-        'PASSWORD': 'testing321',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'loginapp',
+    #     'USER': 'santoshi',
+    #     'PASSWORD': 'testing321',
+    #     'HOST': '127.0.0.1',
+    #     'PORT': '5432',
+    # }
 }
 
 REST_FRAMEWORK = {
@@ -190,3 +209,16 @@ EMAIL_HOST_PASSWORD=os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_HOST_USER=os.environ.get('EMAIL_HOST_USER')
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+LOGIN_REDIRECT_URL = 'home'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '17490015860-6ncn7fpig453to983k6acvr68893qmp1.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET ='niYf7Uv4o2mAWVjAMv_7fA2b'
+
+SOCIAL_AUTH_GITHUB_KEY = '686f469f289e33c55149'
+SOCIAL_AUTH_GITHUB_SECRET = '7b1e72f40834f5084607181e162f626f7c88568e'
+
+SOCIAL_AUTH_FACEBOOK_KEY = '195122904882696'
+SOCIAL_AUTH_FACEBOOK_SECRET = '91f71cfb401a07f2001f474efc0f0f73'
+
+SITE_ID =1 

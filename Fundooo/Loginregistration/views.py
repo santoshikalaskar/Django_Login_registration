@@ -28,11 +28,17 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
 import os, smtplib, jwt, pdb, logging, json
 from Fundooo.settings import EMAIL_HOST_USER, SECRET_KEY, file_handler
+from django.contrib.auth.decorators import login_required
 
 #seting log
 logger = logging.getLogger(__name__)
 #logger.setLevel(logging.INFO)
 logger.addHandler(file_handler)
+
+
+@login_required
+def home(request):
+    return render(request, 'Loginregistration/home.html')
 
 def activate(request, surl): 
     try:

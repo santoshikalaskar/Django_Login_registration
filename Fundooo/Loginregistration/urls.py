@@ -11,6 +11,7 @@ from .views import RegistrationAPIview,ForgotPasswordAPIview,ResetPasswordAPIvie
 from . import views
 
 urlpatterns = [
+	path('',views.home, name="home"),
     path('registration/', views.RegistrationAPIview.as_view(),name="registration" ),
     path('login/', views.LoginAPIview.as_view(),name="login" ),
     path('forgotpassword/', views.ForgotPasswordAPIview.as_view(), name="forgotpass"),
