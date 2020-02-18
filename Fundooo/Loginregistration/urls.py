@@ -14,6 +14,7 @@ urlpatterns = [
 	path('',views.home, name="home"),
     path('registration/', views.RegistrationAPIview.as_view(),name="registration" ),
     path('login/', views.LoginAPIview.as_view(),name="login" ),
+    path('profile/', views.profileView, name="profile"),
     path('forgotpassword/', views.ForgotPasswordAPIview.as_view(), name="forgotpass"),
     path('activate/<surl>',views.activate, name="activate"),
     path('reset_password/<surl>/', views.reset_password, name="reset_password"),

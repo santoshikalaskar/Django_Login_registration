@@ -330,4 +330,7 @@ def LogoutAPIview(request):
     except Exception:
         logger.error("something went wrong while logging out")
         return HttpResponse(json.dumps(sms), status=400)
-        
+
+@login_required
+def profileView(request):
+    return render(request, 'Loginregistration/profile.html')    

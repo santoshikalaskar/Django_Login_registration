@@ -8,7 +8,7 @@
 
 
 from django.contrib import admin
-from .models import Registration
+from .models import Registration, Profile
 from .forms import RegistrationForm
 
 class RegisterAdmin(admin.ModelAdmin):
@@ -16,3 +16,4 @@ class RegisterAdmin(admin.ModelAdmin):
     form = RegistrationForm
 
 admin.site.register(Registration)
+admin.site.register(Profile)
