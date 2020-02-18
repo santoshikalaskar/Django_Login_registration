@@ -32,3 +32,8 @@ ERROR :2020-02-17 11:21:49,334 :/home/user/Desktop/santoshi/Fundooo/Loginregistr
 ERROR :2020-02-17 11:22:16,905 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :337 :something went wrong while logging out
 ERROR :2020-02-17 12:04:40,072 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :164 :Failed, Not the Registered username or password
 ERROR :2020-02-17 12:04:40,072 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :165 :They used username: fundoo and password: 123445
+ERROR :2020-02-18 07:14:43,262 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :164 :Failed, Not the Registered username or password
+ERROR :2020-02-18 07:14:43,262 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :165 :They used username: santoshi and password: test
+ERROR :2020-02-18 07:16:25,631 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :164 :Failed, Not the Registered username or password
+ERROR :2020-02-18 07:16:25,631 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :165 :They used username: fundoo and password: testing321
+ERROR :2020-02-18 10:34:46,502 :/home/user/Desktop/santoshi/Fundooo/Loginregistration/views.py :79 :email address is already registered registration process
