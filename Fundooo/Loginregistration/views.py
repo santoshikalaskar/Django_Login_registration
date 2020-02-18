@@ -165,10 +165,8 @@ class LoginAPIview(GenericAPIView):
             logger.error("They used username: {} and password: {}".format(username,password))
             return HttpResponse("<h1>Invalid login details given</h1>")  
 
-        print("111111111",user)
         if user.is_active:
             login(request,user)
-            print("111111111",user)
             logger.info("user logged in successfully..user-> {}!".format(username))
             #return HttpResponse("<h1>Your account is successfully Logged in...!</h1>")
             return redirect('home')
@@ -331,6 +329,6 @@ def LogoutAPIview(request):
         logger.error("something went wrong while logging out")
         return HttpResponse(json.dumps(sms), status=400)
 
-@login_required
+@login_required(login_url='login')
 def profileView(request):
     return render(request, 'Loginregistration/profile.html')    
