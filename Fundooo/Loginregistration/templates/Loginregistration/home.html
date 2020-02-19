@@ -5,6 +5,8 @@
   <center>
       <h2>Homepage</h2>
       <p> Welcome to my site, {% if user.is_authenticated %} <strong> {{ user.username }} </strong> 
+        <br>
+        <img src="{{ user.profile.image.url }}" class="rounded-circle">
         {% else%} visitors  {% endif %}</p>
       <p>
         <strong> Total User Registered:</strong> {{ count }}
