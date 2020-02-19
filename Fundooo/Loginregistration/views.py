@@ -349,7 +349,7 @@ class ProfileUpdateAPIview(GenericAPIView):
         try:
             profile = Profile.objects.get(user=request.user)
             serializer = ProfileUpdateSerializer(profile, data={'image':img})
-            print(serializer)
+
             if serializer.is_valid():
                 serializer.save()
                 logger.info('user profile successfully updated..!')
