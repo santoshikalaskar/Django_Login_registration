@@ -1,0 +1,17 @@
+
+{% extends 'Loginregistration/base1.html' %}
+
+{% block content %}
+<br>
+<div class="container"></div>
+<h1 align="center"> change Image </h1>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <label for="img">Select image:</label> <br>
+    <input type="file" id="img" name="img" accept="image/*">
+    <input type="submit" class="btn btn-primary">
+
+</form>
+</div>
+{% endblock %}

@@ -114,11 +114,7 @@ DATABASES = {
     }
 }
 
-REST_FRAMEWORK = {
-  'DEFAULT_AUTHENTICATION_CLASSES': (
-    'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-  ),
-}
+
 #AUTH_USER_MODEL = 'user.User'
 # REST_FRAMEWORK = {
 #     'DEFAULT_PERMISSION_CLASSES': [ 
@@ -165,6 +161,15 @@ REST_FRAMEWORK = {
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.IsAuthenticated',
+#     ],
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#     'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+#   ),
+# }
 
 AUTH_PASSWORD_VALIDATORS = [
     {

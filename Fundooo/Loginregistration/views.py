@@ -13,8 +13,8 @@ from django.contrib.auth import authenticate, login, logout
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
-from .models import Registration
-from .serializers import RegistrationSerializer, LoginSerializer,EmailSerializer,ResetPassSerializer
+from .models import Registration, Profile
+from .serializers import RegistrationSerializer, LoginSerializer,EmailSerializer,ResetPassSerializer,ProfileUpdateSerializer
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
 from django.core.validators import validate_email
@@ -30,7 +30,10 @@ from django.core.mail import send_mail
 import os, smtplib, jwt, pdb, logging, json
 from Fundooo.settings import EMAIL_HOST_USER, SECRET_KEY, file_handler
 from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import action
+from rest_framework import status, parsers, response, viewsets
 
+#from rest_framework.parsers import FormParser,MultiPartParser
 #seting log
 logger = logging.getLogger(__name__)
 #logger.setLevel(logging.INFO)
@@ -332,3 +335,33 @@ def LogoutAPIview(request):
 @login_required(login_url='login')
 def profileView(request):
     return render(request, 'Loginregistration/profile.html')    
+
+class ProfileUpdateAPIview(GenericAPIView):
+    serializer_class = ProfileUpdateSerializer
+    #parser_classes = (FormParser, MultiPartParser)
+
+    def get(self, request):
+        return render(request, 'Loginregistration/update_image.html')
+
+    def post(self, request):
+        img = request.FILES['img']
+        print(img)
+        try:
+            profile = Profile.objects.get(user=request.user)
+            serializer = ProfileUpdateSerializer(profile, data={'image':img})
+            print(serializer)
+            if serializer.is_valid():
+                serializer.save()
+                logger.info('user profile successfully updated..!')
+                return redirect('profile')
+            else:
+                logger.error('user profile not updated',serializer.errors)
+                return Response(serializer.errors, status=400)
+        except:
+            logger.error('not a vaild user for updating profile',serializer.errors)
+            return Response(serializer.errors, status=400)
+
+
+    
+  
+
