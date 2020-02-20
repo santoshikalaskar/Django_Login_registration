@@ -1,7 +1,7 @@
 # File created using '.gitignore Generator' for Visual Studio Code: https://bit.ly/vscode-gig
 
-# Created by https://www.gitignore.io/api/visualstudiocode,linux,python
-# Edit at https://www.gitignore.io/?templates=visualstudiocode,linux,python
+# Created by https://www.gitignore.io/api/visualstudiocode,python,linux,virtualenv
+# Edit at https://www.gitignore.io/?templates=visualstudiocode,python,linux,virtualenv
 
 ### Linux ###
 *~
@@ -123,6 +123,19 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+### VirtualEnv ###
+# Virtualenv
+# http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
+pyvenv.cfg
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pip-selfcheck.json
+
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
@@ -134,7 +147,6 @@ dmypy.json
 # Ignore all local history of files
 .history
 
-# End of https://www.gitignore.io/api/visualstudiocode,linux,python
-
+# End of https://www.gitignore.io/api/visualstudiocode,python,linux,virtualenv
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
