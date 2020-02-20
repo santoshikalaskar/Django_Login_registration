@@ -19,7 +19,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
 from django.core.validators import validate_email
 from django.urls import reverse
-from .token import token_activation
+from .token import token_activation, token_validation
 from .sendmail import send_mail_to_recipients
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django_short_url.views import get_surl
@@ -32,9 +32,13 @@ from Fundooo.settings import EMAIL_HOST_USER, SECRET_KEY, file_handler
 from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import action
 from rest_framework import status, parsers, response, viewsets
-
+# from Fundooo.rest_conf.main import *
+from rest_framework.authentication import SessionAuthentication
+from rest_framework import permissions
+from Loginregistration.redis_instance import redis_instances
 #from rest_framework.parsers import FormParser,MultiPartParser
-#seting log
+
+#setting log
 logger = logging.getLogger(__name__)
 #logger.setLevel(logging.INFO)
 logger.addHandler(file_handler)
@@ -49,6 +53,9 @@ def home(request):
 class RegistrationAPIview(GenericAPIView):
 
     serializer_class = RegistrationSerializer
+    permission_classes = []
+    authentication_classes = []
+
     def get(self, request):
         return render(request, 'Loginregistration/registration.html')
 
@@ -127,7 +134,10 @@ class RegistrationAPIview(GenericAPIView):
                 logger.error("error: %s while registration ", str(e))
                 return HttpResponse(json.dumps(sms), status=400)
 
-def activate(request, surl): 
+def activate(request, surl):
+    permission_classes = []
+    authentication_classes = []
+
     try:
         tokenobject = ShortURL.objects.get(surl=surl)
         token = tokenobject.lurl
@@ -152,6 +162,8 @@ def activate(request, surl):
 
 # for login user
 class LoginAPIview(GenericAPIView):
+    permission_classes = []
+    authentication_classes = []
     serializer_class = LoginSerializer
 
     def get(self, request):
@@ -167,8 +179,10 @@ class LoginAPIview(GenericAPIView):
             logger.error("Failed, Not the Registered username or password")
             logger.error("They used username: {} and password: {}".format(username,password))
             return HttpResponse("<h1>Invalid login details given</h1>")  
-
+        
         if user.is_active:
+            token = token_validation(username, password)
+            redis_instances.set(username,token)
             login(request,user)
             logger.info("user logged in successfully..user-> {}!".format(username))
             #return HttpResponse("<h1>Your account is successfully Logged in...!</h1>")
@@ -181,6 +195,8 @@ class LoginAPIview(GenericAPIView):
 # forgotpassword call 
 class ForgotPasswordAPIview(GenericAPIView):
     serializer_class = EmailSerializer
+    permission_classes = []
+    authentication_classes = []
 
     def get(self, request):
         return render(request, 'Loginregistration/forgotpassword.html')
@@ -250,6 +266,8 @@ class ForgotPasswordAPIview(GenericAPIView):
 
 # after clicking rest_password link of email by user
 def reset_password(request, surl):
+    permission_classes = []
+    authentication_classes = []
     try:
         # decode token & fetch username from it
         tokenobject = ShortURL.objects.get(surl=surl)
@@ -275,6 +293,8 @@ def reset_password(request, surl):
 # reset password page
 class ResetPasswordAPIview(GenericAPIView):
     serializer_class = ResetPassSerializer
+    permission_classes = []
+    authentication_classes = []
     
     # enter new password
     def post(self, request, user_name):
@@ -324,7 +344,12 @@ def LogoutAPIview(request):
     try:
         user = request.user
         logout(request)
-        print(user)
+        # value = redis_instances.get(user.username)
+        # print(value)
+
+        # Deleting token of logged user
+        redis_instances.delete(user.username)
+
         sms = {"success": True, "message": "logged out succesfully", "data": []}
         logger.info("%s logged out succesfully ", user)
         return render(request, 'Loginregistration/home.html')
@@ -339,6 +364,8 @@ def profileView(request):
 class ProfileUpdateAPIview(GenericAPIView):
     serializer_class = ProfileUpdateSerializer
     #parser_classes = (FormParser, MultiPartParser)
+    permission_classes = [permissions.IsAuthenticated]
+    # authentication_classes = [SessionAuthentication]
 
     def get(self, request):
         return render(request, 'Loginregistration/update_image.html')

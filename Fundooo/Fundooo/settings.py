@@ -38,14 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     
     # thired-party apps
-    'rest_framework',
     'django_short_url',
     'social_django',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'storages',
-
+    'rest_framework',
     #Local-apps
     'Loginregistration',
 
@@ -161,6 +160,8 @@ DATABASES = {
 #   'JWT_AUTH_COOKIE': None,
 # }
 
+
+
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
@@ -220,6 +221,7 @@ EMAIL_HOST_USER=os.environ.get('EMAIL_HOST_USER')
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+AUTH_ENDPOINT=os.environ.get('AUTH_ENDPOINT')
 
 LOGIN_REDIRECT_URL = 'home'
 # LOGIN_URL ='login'
@@ -244,3 +246,7 @@ AWS_DEFAULT_ACL = None
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 SITE_ID =1 
 AWS_S3_SIGNATURE_VERSION = 's3v4'
+
+
+
+# from Fundooo.rest_conf.main import *
