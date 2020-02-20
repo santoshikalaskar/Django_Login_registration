@@ -1,7 +1,7 @@
 # File created using '.gitignore Generator' for Visual Studio Code: https://bit.ly/vscode-gig
 
-# Created by https://www.gitignore.io/api/visualstudiocode,python,linux,virtualenv
-# Edit at https://www.gitignore.io/?templates=visualstudiocode,python,linux,virtualenv
+# Created by https://www.gitignore.io/api/visualstudiocode,virtualenv,python,linux,logtalk
+# Edit at https://www.gitignore.io/?templates=visualstudiocode,virtualenv,python,linux,logtalk
 
 ### Linux ###
 *~
@@ -14,9 +14,30 @@
 
 # Linux trash folder which might appear on any partition or disk
 .Trash-*
-
+.log
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
+
+### Logtalk ###
+# gitignore template for LogTalk, a programming language that builds upon Prolog
+# website: https://logtalk.org/
+
+# Logtalk temporary file directories
+.lgt_tmp/
+lgt_tmp/
+
+# Logtalk default unit testing and doclet results and logs directories
+logtalk_tester_logs/
+logtalk_doclet_logs/
+
+# backend Prolog compiler temporary files
+.pl-history
+*.out
+*.xwam
+*.qo
+*.ql
+*.itf
+*.po
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
@@ -147,6 +168,7 @@ pip-selfcheck.json
 # Ignore all local history of files
 .history
 
-# End of https://www.gitignore.io/api/visualstudiocode,python,linux,virtualenv
+# End of https://www.gitignore.io/api/visualstudiocode,virtualenv,python,linux,logtalk
+
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
