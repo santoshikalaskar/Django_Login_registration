@@ -56,6 +56,68 @@ class LabelCreateview(LoginRequiredMixin,APIView):
             sms["message"] = "something went wrong"
             return HttpResponse(sms, status=400)
 
+@method_decorator(login_required(login_url='login'),name='dispatch')
+class LabelUpdateview(LoginRequiredMixin,APIView):
+    serializer_class = LabelSerializer
+    lookup_field = 'id'
+    def get_object(self, id):
+        try:
+            return Label.objects.get(id=id)
+        except Label.DoesNotExist as e:
+            return Response(e, status=404)
+
+    def get(self, request, id=None):
+        instance = self.get_object(id=id)
+        serializer = LabelSerializer(instance)
+        return Response(serializer.data)
+
+    def put(self, request, id):
+        sms = {
+            'success': False,
+            'message': "Updating Lables",
+            'data': [],
+        }
+        user = request.user
+        try:
+            data= request.data
+            instance = self.get_object(id)
+            serializer = LabelSerializer(instance, data=data)
+            if serializer.is_valid():
+                serializer.save()
+                sms["success"] = True
+                sms['message']= "Label Updated successfully"
+                sms['data'] = request.data
+                return Response(sms, status=200)
+            sms["success"] = False
+            sms['message']= "Label Not Updated successfully"
+            sms['data'] = request.data
+            return Response(sms, status=400)
+        except e:
+            sms["success"] = False
+            sms['message']= "Label id not present"
+            sms['data'] = request.data
+            return Response(sms, status=400)
+    
+    def delete(self, request, id):
+        sms = {
+            'success': False,
+            'message': "Updating Lables",
+            'data': [],
+        }
+        try:
+            data= request.data
+            instance = self.get_object(id)
+            instance.delete()
+            sms["success"] = True
+            sms['message']= "Label Deleted successfully"
+            sms['data'] = request.data
+            return Response(sms, status=204)
+        except e:
+            sms["success"] = False
+            sms['message']= "Label not deleted"
+            sms['data'] = request.data
+            return Response(sms, status=400)
+        
 
 
 
