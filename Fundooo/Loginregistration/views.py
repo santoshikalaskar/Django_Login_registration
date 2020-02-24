@@ -338,7 +338,7 @@ class ResetPasswordAPIview(GenericAPIView):
             logger.error('User does not exits.')
             return HttpResponse(sms, status=400)
 
-
+# Logout user
 def LogoutAPIview(request):
     sms = {"success": False, "message": "logout request", "data": []}
     try:
@@ -357,10 +357,12 @@ def LogoutAPIview(request):
         logger.error("something went wrong while logging out")
         return HttpResponse(json.dumps(sms), status=400)
 
+#Login required befor viewing profile
 @login_required(login_url='login')
 def profileView(request):
     return render(request, 'Loginregistration/profile.html')    
 
+# update profile picture
 class ProfileUpdateAPIview(GenericAPIView):
     serializer_class = ProfileUpdateSerializer
     #parser_classes = (FormParser, MultiPartParser)

@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     #Local-apps
     'Loginregistration',
+    'Notes',
 
 
 
@@ -223,8 +224,8 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 AUTH_ENDPOINT=os.environ.get('AUTH_ENDPOINT')
 
-LOGIN_REDIRECT_URL = 'home'
-# LOGIN_URL ='login'
+LOGIN_REDIRECT_URL = 'egwdg'
+LOGIN_URL ='login'
 #LOGOUT_REDIRECT_URL = 'home'
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
