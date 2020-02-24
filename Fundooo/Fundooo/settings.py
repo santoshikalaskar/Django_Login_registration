@@ -45,9 +45,10 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'storages',
     'rest_framework',
+    'colorfield',
     #Local-apps
     'Loginregistration',
-    'Notes',
+    'Note',
 
 
 
