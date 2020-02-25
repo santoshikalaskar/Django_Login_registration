@@ -31,11 +31,11 @@ class LabelCreateview(LoginRequiredMixin,APIView):
             serializer = LabelSerializer(labels, many=True)
             return Response(serializer.data, status=200)
         except Exception:
-            return Response(serializer.data, status=400)
+            sms['message']="unable to list Lables"
+            return Response(sms, status=400)
 
     def post(self, request):
         user = request.user
-
         sms = {
             'success': False,
             'message': "creating Lables",
@@ -120,20 +120,17 @@ class LabelUpdateview(LoginRequiredMixin,APIView):
             sms['message']= "Label Deleted successfully"
             sms['data'] = request.data
             return Response(sms, status=204)
-        except e:
+        except:
             sms["success"] = False
             sms['message']= "Label not deleted"
             sms['data'] = request.data
             return Response(sms, status=400)
         
-
 @method_decorator(login_required(login_url='login'),name='dispatch')
 class NoteCreateView(generics.GenericAPIView, 
         mixins.ListModelMixin,
         mixins.CreateModelMixin,
-        mixins.RetrieveModelMixin,
-        mixins.UpdateModelMixin,
-        mixins.DestroyModelMixin):
+        mixins.RetrieveModelMixin):
     serializer_class = NoteSerializer
     queryset = MyNotes.objects.all()
     lookup_field = 'id'
@@ -165,30 +162,75 @@ class NoteCreateView(generics.GenericAPIView,
         serializer.save(user = self.request.user)
 
 @method_decorator(login_required(login_url='login'),name='dispatch')
-class NoteUpdateView(generics.GenericAPIView, 
-        mixins.ListModelMixin,
-        mixins.CreateModelMixin,
-        mixins.RetrieveModelMixin,
-        mixins.UpdateModelMixin,
-        mixins.DestroyModelMixin):
+class NoteUpdateView(APIView):
     serializer_class = NoteSerializer
     queryset = MyNotes.objects.all()
     lookup_field = 'id'
+    sms = {
+            'success': False,
+            'message': "Update operations on Note",
+            'data': [],
+        }
+    def get_object(self,request, id):
+        try:
+            user = request.user
+            queryset = MyNotes.objects.filter(user_id = user.id)
+            return get_object_or_404(queryset,id=id)
+        except MyNotes.DoesNotExist:
+            sms['message']= "id not present"
+            return Response(sms, status=404)
 
     def get(self, request, id):
-        return self.retrieve(request,id)
-    
-    def put(self,request, id):
-        return self.update(request, id)
-    
-    def delete(self,request,id):
-        return self.destroy(request,id)
+        try:
+            user = request.user
+            mynote = self.get_object(request, id)
+            serializer = NoteSerializer(mynote)
+            return Response(serializer.data, status=200)
+        except Exception:
+            return Response("bad request", status=400)
 
-    # def perform_update(self, serializer):
-    #     serializer.save(user = self.request.user)
+    def put(self, request, id):
+        sms = {
+            'success': False,
+            'message': "Updating Note",
+            'data': [],
+        }
+        user = request.user
+        try:
+            data= request.data
+            instance = self.get_object(request, id)
+            serializer = NoteSerializer(instance, data=data)
+            if serializer.is_valid():
+                serializer.save(user_id=user.id)
+                sms["success"] = True
+                sms['message']= "Note Updated successfully"
+                sms['data'] = request.data
+                return Response(sms, status=200)
+            return Response(serializer.data, status=400)
+        except:
+            sms["message"] = "Failed to update Note"
+            return Response(sms, status=400)
 
-    # def perform_destroy(self, instance):
-    #     return super().perform_destroy(instance)
+    def delete(self, request, id):
+        sms = {
+            'success': False,
+            'message': "Deleting Note",
+            'data': [],
+        }
+        try:
+            data= request.data
+            instance = self.get_object(request,id)
+            instance.delete()
+            sms["success"] = True
+            sms['message']= "Note Deleted successfully"
+            sms['data'] = request.data
+            return Response(sms, status=204)
+        except:
+            sms["success"] = False
+            sms['message']= "Note not deleted"
+            sms['data'] = request.data
+            return Response(sms, status=400)
+    
 
     
     

@@ -15,7 +15,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('Loginregistration.urls')),
-    path('api/label/', include('Note.urls')),
+    path('api/app/', include('Note.urls')),
     path('oauth/',include('social_django.urls'), name='social'),
     path('api/token/',jwt_views.TokenObtainPairView.as_view(), name='obtain_token_pair'),
     # path('api-auth',include('rest_frameworks.urls')),

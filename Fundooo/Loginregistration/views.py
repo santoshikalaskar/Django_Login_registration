@@ -166,6 +166,7 @@ class LoginAPIview(GenericAPIView):
     authentication_classes = []
     serializer_class = LoginSerializer
 
+
     def get(self, request):
         return render(request, 'Loginregistration/login.html')
 
