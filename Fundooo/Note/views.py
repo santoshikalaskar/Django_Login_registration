@@ -187,7 +187,7 @@ class NoteUpdateView(APIView):
             serializer = NoteSerializer(mynote)
             return Response(serializer.data, status=200)
         except Exception:
-            return Response("bad request", status=400)
+            return Response("can't get this id data.", status=400)
 
     def put(self, request, id):
         sms = {
