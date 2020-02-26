@@ -13,6 +13,10 @@ from rest_framework import generics
 from rest_framework import mixins
 from Fundooo.settings import SECRET_KEY, file_handler
 from Loginregistration.redis_instance import redis_instances
+from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
+from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
+from .pagination import CustomPagination
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 # logger.setLevel(logging.ERROR)
@@ -152,7 +156,8 @@ class LabelUpdateview(LoginRequiredMixin,APIView):
             sms['data'] = request.data
             logger.error("Label not deleted, from delete() ")
             return Response(sms, status=400)
-        
+
+
 @method_decorator(login_required(login_url='login'),name='dispatch')
 class NoteCreateView(generics.GenericAPIView, 
         mixins.ListModelMixin,
@@ -170,8 +175,16 @@ class NoteCreateView(generics.GenericAPIView,
     def get(self, request):
         try:
             user = request.user
-            mynote = MyNotes.objects.filter(user_id = user.id)
-            serializer = NoteSerializer(mynote, many=True)
+            notes = MyNotes.objects.filter(user_id = user.id)
+            page = request.GET.get('page', 1)
+            paginator = Paginator(notes, 4)
+            try:
+                notes = paginator.page(page)
+            except PageNotAnInteger:
+                notes = paginator.page(1)
+            except EmptyPage:
+                notes = paginator.page(paginator.num_pages)
+            serializer = NoteSerializer(notes, many=True)
             logger.info("Notes listed successfully, from get() ")
             return Response(serializer.data, status=200)
         except Exception:
