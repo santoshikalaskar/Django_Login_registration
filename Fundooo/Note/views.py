@@ -12,9 +12,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework import generics
 from rest_framework import mixins
 from Fundooo.settings import SECRET_KEY, file_handler
-
+from Loginregistration.redis_instance import redis_instances
 logger = logging.getLogger(__name__)
-# logger.setLevel(logging.INFO)
+logger.setLevel(logging.INFO)
 # logger.setLevel(logging.ERROR)
 logger.addHandler(file_handler)
 
@@ -63,6 +63,8 @@ class LabelCreateview(LoginRequiredMixin,APIView):
             sms['message']= "new label created"
             sms['data'] = request.data
             logger.info(" new label created, successfully...!")
+            redis_instances.hmset(str(user.id)+"label",{create_label.id:label})
+            print(redis_instances.hgetall(str(user.id)+ "label"))
             return Response(sms, status=201)
         except Exception as e:
             sms["message"] = "something went wrong, while creating label in post()"
@@ -78,17 +80,18 @@ class LabelUpdateview(LoginRequiredMixin,APIView):
             'message': "Updating Lables",
             'data': [],
         }
-    def get_object(self, id):
+    def get_object(self,request, id):
         try:
-            queryset = Label.objects.all()
+            user = request.user
+            queryset = Label.objects.filter(user_id = user.id)
             return get_object_or_404(queryset,id=id)
         except Label.DoesNotExist:
             sms['message']= "id not present"
             logger.error("Entered Id not present, from get_object() ")
             return Response(sms, status=404)
 
-    def get(self, request, id=None):
-        instance = self.get_object(id=id)
+    def get(self, request, id):
+        instance = self.get_object(request,id)
         serializer = LabelSerializer(instance)
         logger.info("List all Labels successfully, from get() ")
         return Response(serializer.data)
@@ -102,14 +105,17 @@ class LabelUpdateview(LoginRequiredMixin,APIView):
         user = request.user
         try:
             data= request.data
-            instance = self.get_object(id)
+            label = request.data['labelname']
+            instance = self.get_object(request,id)
             serializer = LabelSerializer(instance, data=data)
             if serializer.is_valid():
-                serializer.save()
+                update_label = serializer.save()
                 sms["success"] = True
                 sms['message']= "Label Updated successfully"
                 sms['data'] = request.data
                 logger.info("Label Updated successfully, from put() ")
+                redis_instances.hmset(str(user.id)+"label",{update_label.id:label})
+                print(redis_instances.hgetall(str(user.id)+ "label"))
                 return Response(sms, status=200)
             sms["success"] = False
             sms['message']= "Label Not Updated, entered data not valied."
@@ -130,12 +136,15 @@ class LabelUpdateview(LoginRequiredMixin,APIView):
         }
         try:
             data= request.data
+            user = request.user
             instance = self.get_object(id)
             instance.delete()
             sms["success"] = True
             sms['message']= "Label Deleted successfully"
             sms['data'] = request.data
             logger.info("Label Deleted successfully, from delete() ")
+            redis_instances.hdel(str(user.id)+"label",id)
+            print(redis_instances.hgetall(str(user.id)+ "label"))
             return Response(sms, status=204)
         except:
             sms["success"] = False
@@ -174,9 +183,12 @@ class NoteCreateView(generics.GenericAPIView,
         user = request.user
         serializer = NoteSerializer(data=data,partial=True)
         if serializer.is_valid():
-            serializer.save(user_id=user.id)
-            return Response(serializer.data,status=201)
+            note_create = serializer.save(user_id=user.id)
             logger.info("new note is created, from post() ")
+            # setting new Note in redis
+            redis_instances.hmset(str(user.id)+ "note", {note_create.id: str(json.dumps(serializer.data))})
+            print(redis_instances.hgetall(str(user.id)+ "note"))
+            return Response(serializer.data,status=201)
         logger.error("something went wrong while creating new note, from post() ")
         return Response(serializer.data, status=400)
 
@@ -226,11 +238,13 @@ class NoteUpdateView(APIView):
             instance = self.get_object(request, id)
             serializer = NoteSerializer(instance, data=data)
             if serializer.is_valid():
-                serializer.save(user_id=user.id)
+                note_update = serializer.save(user_id=user.id)
                 sms["success"] = True
                 sms['message']= "Note Updated successfully"
                 sms['data'] = request.data
                 logger.info("Note Updated successfully, from put() ")
+                redis_instances.hmset(str(user.id)+"note",{note_update.id:str(json.dumps(serializer.data))})
+                print(redis_instances.hgetall(str(user.id)+ "note"))
                 return Response(sms, status=200)
             logger.error("Note Updatedtion failed, from put() ")
             sms['message']= "Note Updatedtion failed"
@@ -248,8 +262,14 @@ class NoteUpdateView(APIView):
         }
         try:
             data= request.data
+            user = request.user
             instance = self.get_object(request,id)
             instance.delete()
+            redis_instances.hdel(str(user.id)+"note",id)
+            try:
+                print(redis_instances.hgetall(str(user.id)+ "note"))
+            except:
+                print("All note Deleted of %s user",user)
             sms["success"] = True
             sms['message']= "Note Deleted successfully"
             sms['data'] = request.data
