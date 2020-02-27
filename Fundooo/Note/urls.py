@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import LabelCreateview,NoteCreateView,NoteUpdateView,ArchievedNoteView,TrashedNoteView
+from .views import LabelCreateview,NoteCreateView,NoteUpdateView,ArchievedNoteView,TrashedNoteView, UnArchieveNoteView
 from . import views
 
 
@@ -10,4 +10,6 @@ urlpatterns = [
     path('note/<int:id>/', views.NoteUpdateView.as_view() ,name='Update_note'),
     path('archieve/', views.ArchievedNoteView.as_view() ,name='archieve_note'),
     path('trash/', views.TrashedNoteView.as_view() ,name='trash_note'),
+    path('archieve/<int:id>/', views.UnArchieveNoteView.as_view() ,name='unarchieve_note'),
+    
 ]

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from .models import Label, MyNotes
-from .serializers import LabelSerializer, NoteSerializer
+from .serializers import LabelSerializer, NoteSerializer, NoteUnArchieveSerializer, NoteUnTrashSerializer
 from django.contrib.auth.decorators import login_required
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
@@ -16,11 +16,16 @@ from Loginregistration.redis_instance import redis_instances
 from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 from .pagination import CustomPagination
+import datetime
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 # logger.setLevel(logging.ERROR)
 logger.addHandler(file_handler)
+
+old_format = '%Y-%m-%dT%H:%M:%S.%f'
+new_format = '%d-%m-%Y %H:%M:%S'
 
 @method_decorator(login_required(login_url='login'),name='dispatch')
 class LabelCreateview(LoginRequiredMixin,APIView):
@@ -341,4 +346,62 @@ class TrashedNoteView(GenericAPIView):
                     return Response(" Trashed Note not available ", status = 400)
         except:
             return Response("something bad happend", status = 400)
+
+class UnArchieveNoteView(GenericAPIView):
+    serializer_class = NoteUnArchieveSerializer
+    queryset = MyNotes.objects.all()
+    lookup_field = 'id'
+    sms = {
+            'success': False,
+            'message': "Un archieved Note",
+            'data': [],
+        }
+    def get_object(self,request, id):
+        try:
+            user = request.user
+            queryset = MyNotes.objects.filter(user_id = user.id)
+            return get_object_or_404(queryset,id=id)
+        except MyNotes.DoesNotExist:
+            sms['message']= "id not present"
+            logger.error("id not present, from get_object() ")
+            return Response(sms, status=404)
+
+    def get(self, request, id):
+        try:
+            user = request.user
+            mynote = self.get_object(request, id)
+            serializer = NoteUnArchieveSerializer(mynote)
+            logger.info("retrieved specific id, from get() ")
+            return Response(serializer.data, status=200)
+        except Exception:
+            logger.error("can't get this id data, from get() ")
+            return Response("can't get this id data.", status=400)
+
+    def put(self, request, id):
+        sms = {
+            'success': False,
+            'message': "Updating Note",
+            'data': [],
+        }
+        user = request.user
+        try:
+            data= request.data
+            instance = self.get_object(request, id)
+            serializer = NoteUnArchieveSerializer(instance, data=data)
+            if serializer.is_valid():
+                note_update = serializer.save(user_id=user.id)
+                sms["success"] = True
+                sms['message']= "Note UnAnarchieved successfully"
+                sms['data'] = request.data
+                logger.info("Note UnAnarchieved successfully, from put() ")
+                redis_instances.hmset(str(user.id)+"note",{note_update.id:str(json.dumps(serializer.data))})
+                print(redis_instances.hgetall(str(user.id)+ "note"))
+                return Response(sms, status=200)
+            logger.error("Note UnArchieve failed, from put() ")
+            sms['message']= "Note Updatedtion failed"
+            return Response(sms, status=400)
+        except:
+            sms["message"] = "Failed to UnArchieve Note"
+            logger.error("Failed to UnArchieve Note, from put() ")
+            return Response(sms, status=400)
 
