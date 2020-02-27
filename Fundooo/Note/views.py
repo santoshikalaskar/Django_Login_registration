@@ -294,7 +294,8 @@ class NoteUpdateView(APIView):
             sms['data'] = request.data
             logger.error("Note can't delete, from delete() ")
             return Response(sms, status=400)
-    
+
+@method_decorator(login_required(login_url='login'),name='dispatch')   
 class ArchievedNoteView(GenericAPIView):
     serializer_class = NoteSerializer
     queryset = MyNotes.objects.all()
@@ -316,4 +317,28 @@ class ArchievedNoteView(GenericAPIView):
                     return Response(" Archieved data not available ", status = 400)
         except:
             return Response("something bad happend", status = 400)     
+
+@method_decorator(login_required(login_url='login'),name='dispatch')
+class TrashedNoteView(GenericAPIView):
+    serializer_class = NoteSerializer
+    queryset = MyNotes.objects.all()
+    lookup_field = 'id'
+
+    def get(self, request):
+        user = request.user
+        data = request.data
+        try:
+            arch_redis_data = redis_instances.hvals(str(user.id)+"is_trashed")
+            if len(arch_redis_data) > 0:
+                serializer = NoteSerializer(arch_redis_data, many=True)
+                return Response(serializer.data, status = 200)
+            else:
+                arch_db_data = MyNotes.objects.filter(user_id = user.id , is_trashed=True)
+                if len(arch_db_data) > 0:
+                    serializer = NoteSerializer(arch_db_data, many=True)
+                    return Response(serializer.data, status = 200)
+                else:
+                    return Response(" Trashed Note not available ", status = 400)
+        except:
+            return Response("something bad happend", status = 400)
 
