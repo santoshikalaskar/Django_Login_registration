@@ -11,5 +11,5 @@ urlpatterns = [
     path('archieve/', views.ArchievedNoteView.as_view() ,name='archieve_note'),
     path('trash/', views.TrashedNoteView.as_view() ,name='trash_note'),
     path('archieve/<int:id>/', views.UnArchieveNoteView.as_view() ,name='unarchieve_note'),
-    
+    path('trash/<int:id>/', views.UntrashedNoteView.as_view() ,name='untrash_note'),
 ]

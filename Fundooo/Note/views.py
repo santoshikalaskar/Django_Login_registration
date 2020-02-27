@@ -405,3 +405,65 @@ class UnArchieveNoteView(GenericAPIView):
             logger.error("Failed to UnArchieve Note, from put() ")
             return Response(sms, status=400)
 
+class UntrashedNoteView(GenericAPIView):
+    serializer_class = NoteUnTrashSerializer
+    queryset = MyNotes.objects.all()
+    lookup_field = 'id'
+    sms = {
+            'success': False,
+            'message': "Un archieved Note",
+            'data': [],
+        }
+    def get_object(self,request, id):
+        try:
+            user = request.user
+            queryset = MyNotes.objects.filter(user_id = user.id, is_trashed=True)
+            return get_object_or_404(queryset,id=id)
+        except MyNotes.DoesNotExist:
+            sms['message']= "id not present"
+            logger.error("id not present, from get_object() ")
+            return Response(sms, status=404)
+
+    def get(self, request, id):
+        try:
+            user = request.user
+            mynote = self.get_object(request, id)
+            serializer = NoteUnTrashSerializer(mynote)
+            print(serializer.data)
+            logger.info("retrieved specific id, from get() ")
+            return Response(serializer.data, status=200)
+        except Exception:
+            logger.error("can't get this id data, from get() ")
+            return Response("can't get this id data.", status=400)
+
+    def put(self, request, id):
+        sms = {
+            'success': False,
+            'message': "Untrash Note from trash Note",
+            'data': [],
+        }
+        user = request.user
+        try:
+            data= request.data
+            instance = self.get_object(request, id)
+            serializer = NoteUnTrashSerializer(instance, data=data)
+            
+            if serializer.is_valid():
+                note_update = serializer.save(user_id=user.id)
+                is_trashed_val = serializer.data["is_trashed"]
+                if is_trashed_val == False:
+                    sms["success"] = True
+                    sms['message']= "Note UnTrashed successfully"
+                    sms['data'] = request.data
+                    logger.info("Note UnTrashed successfully. ")
+                    redis_instances.hmset(str(user.id)+"note",{note_update.id:str(json.dumps(serializer.data))})
+                    print(redis_instances.hgetall(str(user.id)+ "note"))
+                    return Response(sms, status=200)
+                else:
+                    logger.error("Note UnTrashed failed,Note present in Trash only.")
+                    sms['message']= "Note UnTrashed failed,Note present in Trash only"
+                    return Response(sms, status=400)
+        except:
+            sms["message"] = "Failed to UnTrashed Note"
+            logger.error("Failed to UnTrashed Note, from put() ")
+            return Response(sms, status=400)
