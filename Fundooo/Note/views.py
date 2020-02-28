@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.models import User 
 from django.http import HttpResponse
 from .models import Label, MyNotes
 from .serializers import LabelSerializer, NoteSerializer, NoteUnArchieveSerializer, NoteUnTrashSerializer
@@ -181,17 +182,20 @@ class NoteCreateView(generics.GenericAPIView,
         try:
             user = request.user
             notes = MyNotes.objects.filter(user_id = user.id,is_trashed =False, is_archieved=False)
-            page = request.GET.get('page', 1)
-            paginator = Paginator(notes, 4)
-            try:
-                notes = paginator.page(page)
-            except PageNotAnInteger:
-                notes = paginator.page(1)
-            except EmptyPage:
-                notes = paginator.page(paginator.num_pages)
-            serializer = NoteSerializer(notes, many=True)
-            logger.info("Notes listed successfully, from get() ")
-            return Response(serializer.data, status=200)
+            if len(notes)>0:
+                page = request.GET.get('page', 1)
+                paginator = Paginator(notes, 4)
+                try:
+                    notes = paginator.page(page)
+                except PageNotAnInteger:
+                    notes = paginator.page(1)
+                except EmptyPage:
+                    notes = paginator.page(paginator.num_pages)
+                serializer = NoteSerializer(notes, many=True)
+                logger.info("Notes listed successfully, from get() ")
+                return Response(serializer.data, status=200)
+            else:
+                return Response("No such note availabel please create new note", status=400)
         except Exception:
             logger.error("Notes not listed something went wrong, from get() ")
             return Response(serializer.data, status=400)
@@ -347,6 +351,7 @@ class TrashedNoteView(GenericAPIView):
         except:
             return Response("something bad happend", status = 400)
 
+@method_decorator(login_required(login_url='login'),name='dispatch')
 class UnArchieveNoteView(GenericAPIView):
     serializer_class = NoteUnArchieveSerializer
     queryset = MyNotes.objects.all()
@@ -405,6 +410,7 @@ class UnArchieveNoteView(GenericAPIView):
             logger.error("Failed to UnArchieve Note, from put() ")
             return Response(sms, status=400)
 
+@method_decorator(login_required(login_url='login'),name='dispatch')
 class UntrashedNoteView(GenericAPIView):
     serializer_class = NoteUnTrashSerializer
     queryset = MyNotes.objects.all()
@@ -467,3 +473,20 @@ class UntrashedNoteView(GenericAPIView):
             sms["message"] = "Failed to UnTrashed Note"
             logger.error("Failed to UnTrashed Note, from put() ")
             return Response(sms, status=400)
+
+@method_decorator(login_required(login_url='login'),name='dispatch')
+class RemainderNoteView(GenericAPIView):
+
+    def get(self, request):
+        user = request.user
+        try:
+            remainder = MyNotes.objects.filter(user_id = user.id, remender__isnull=False)
+            if len(remainder)>0:
+                remainder_list = remainder.values('title','remender')
+                return Response(remainder_list, status=200)
+            else:
+                return Response("No such Note available has setted any Remainder", status=200)
+        except:
+            return Response("Something went wrong...", 400)
+
+

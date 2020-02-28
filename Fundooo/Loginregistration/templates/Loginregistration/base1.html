@@ -16,9 +16,13 @@
             {% if user.is_authenticated %}
             <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>/
             <a class="nav-item nav-link" href="{% url 'updateprofile' %}">UpdateProfile</a>/ 
-            <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>/ 
             <a class="nav-item nav-link" href="{% url 'create_label' %}">create Labels</a>/ 
             <a class="nav-item nav-link" href="{% url 'create_note' %}">create Notes</a>/ 
+            <a class="nav-item nav-link" href="{% url 'archieve_note' %}">Archieve Notes</a>/ 
+            <a class="nav-item nav-link" href="{% url 'trash_note' %}">Trash Notes</a>/ 
+            <a class="nav-item nav-link" href="{% url 'remainder_note' %}"> Remainder Notes</a>/ 
+           
+            <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>/ 
             {% else %}
             <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>/
             <a class="nav-item nav-link" href="{% url 'registration' %}">Register</a>/
