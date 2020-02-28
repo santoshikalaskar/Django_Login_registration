@@ -490,3 +490,36 @@ class RemainderNoteView(GenericAPIView):
             return Response("Something went wrong...", 400)
 
 
+class CollaboratorAPIView(GenericAPIView):
+    def get(self, request):
+        user = request.user
+        sms = {
+            'success': False,
+            'message': "listing Collaborators",
+            'data': [],
+        }
+        temp= []
+        try:
+            collabrator = MyNotes.objects.filter(user_id = user.id, collabrator__isnull=False,is_trashed =False)
+            print(collabrator)
+            if len(collabrator)>0:
+                collabrator_list = collabrator.values('collabrator','title')
+                print(collabrator_list)
+                
+                for i in range(len(collabrator_list)):
+                    print(i)
+                    print(collabrator_list[i]['collabrator'])
+                    collabrator_id = collabrator_list[i]['collabrator']
+                    collabrator_email = User.objects.filter(id = collabrator_id).values('email')
+                    print(collabrator_email[0])
+                    print(collabrator_list[i])
+                    collabrator_list[i].update(collabrator_email[0])
+                    temp = temp + [collabrator_list[i]]
+                    sms['success']= True
+                    sms['message']="List of all Note with collaborated users with their Mail Id"
+                    sms['data'] = temp 
+                return Response(sms, status=200)
+            else:
+                return Response("No such Note available to have any collabrator Added.", status=200)
+        except:
+            return Response("Something went wrong...", status=400)

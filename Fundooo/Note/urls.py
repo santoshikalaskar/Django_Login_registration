@@ -13,5 +13,5 @@ urlpatterns = [
     path('archieve/<int:id>/', views.UnArchieveNoteView.as_view() ,name='unarchieve_note'),
     path('trash/<int:id>/', views.UntrashedNoteView.as_view() ,name='untrash_note'),
     path('remainder/', views.RemainderNoteView.as_view() ,name='remainder_note'),
-    #path('collaborator/', views.CollaboratorAPIView.as_view() ,name='collaborator_note'),
+    path('collaborator/', views.CollaboratorAPIView.as_view() ,name='collaborator_note'),
 ]
